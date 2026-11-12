@@ -10,6 +10,10 @@ using System.Windows.Threading;
 using Microsoft.Win32;
 using WinForms = System.Windows.Forms;
 
+// csc doesn't add this by itself (MSBuild does). Without it WPF falls back to .NET 4.0 compatibility
+// behaviour, which among other things ignores per-monitor DPI changes.
+[assembly: System.Runtime.Versioning.TargetFramework(".NETFramework,Version=v4.8", FrameworkDisplayName = ".NET Framework 4.8")]
+
 namespace FlatClip
 {
     public class App : Application
@@ -275,15 +279,32 @@ namespace FlatClip
                 return (T)XamlReader.Parse(L.Localize(r.ReadToEnd()));
         }
 
-        public static void Log(Exception ex)
+        const long MaxLogSize = 1024 * 1024;
+        static readonly object logLock = new object();
+
+        public static void Log(Exception ex) => Log(ex.ToString());
+
+        /// <summary>Appends to %LOCALAPPDATA%\FlatClip\error.log; at 1 MB the log moves to error.log.old.</summary>
+        public static void Log(string message)
         {
-            try
+            lock (logLock)   // also called from the background save
             {
-                var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "FlatClip");
-                Directory.CreateDirectory(dir);
-                File.AppendAllText(Path.Combine(dir, "error.log"), $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {ex}\r\n\r\n");
+                try
+                {
+                    var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "FlatClip");
+                    Directory.CreateDirectory(dir);
+                    var path = Path.Combine(dir, "error.log");
+                    var info = new FileInfo(path);
+                    if (info.Exists && info.Length > MaxLogSize)
+                    {
+                        var old = path + ".old";
+                        if (File.Exists(old)) File.Delete(old);
+                        File.Move(path, old);
+                    }
+                    File.AppendAllText(path, $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {message}\r\n\r\n");
+                }
+                catch { }
             }
-            catch { }
         }
     }
 }

@@ -37,6 +37,6 @@ $resources = @(
 )
 
 & $csc /nologo /noconfig /target:winexe /platform:anycpu /optimize+ /langversion:9.0 /nowarn:1701,1702 `
-    /out:bin\FlatClip.exe /win32icon:obj\icon.ico @refs @resources (Get-ChildItem src\*.cs).FullName
+    /out:bin\FlatClip.exe /win32icon:obj\icon.ico /win32manifest:src\app.manifest @refs @resources (Get-ChildItem src\*.cs).FullName
 if ($LASTEXITCODE) { throw 'Build failed' }
 Write-Host "OK -> $PSScriptRoot\bin\FlatClip.exe"

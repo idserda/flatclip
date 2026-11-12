@@ -24,6 +24,15 @@ namespace FlatClip
         [DllImport("user32.dll", CharSet = CharSet.Unicode)] public static extern uint RegisterClipboardFormat(string name);
         [DllImport("user32.dll")] public static extern bool IsClipboardFormatAvailable(uint format);
         [DllImport("user32.dll")] public static extern short GetAsyncKeyState(int vk);
+        [DllImport("user32.dll", SetLastError = true)] public static extern bool SetWindowPos(IntPtr hWnd, IntPtr after, int x, int y, int cx, int cy, uint flags);
+        [DllImport("user32.dll", SetLastError = true)] public static extern bool GetWindowRect(IntPtr hWnd, out RECT rect);
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct RECT { public int Left, Top, Right, Bottom; }
+
+        const uint SWP_NOSIZE = 0x1, SWP_NOZORDER = 0x4, SWP_NOACTIVATE = 0x10;
+        public const uint SWP_MOVEONLY = SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE;
+
         [DllImport("user32.dll", SetLastError = true)] static extern uint SendInput(uint n, INPUT[] inputs, int size);
 
         [StructLayout(LayoutKind.Sequential)]
@@ -54,7 +63,7 @@ namespace FlatClip
         }
 
         /// <summary>
-        /// Sends Ctrl+V. Modifiers the user is still holding (e.g. Alt from Alt+Enter) are released
+        /// Sends Ctrl+V. Modifiers the user is still holding (e.g. Shift from Shift+Enter) are released
         /// first, while Ctrl is already down, so the target app sees a clean Ctrl+V and no Alt-menu / Start-menu pops up.
         /// </summary>
         public static void SendCtrlV()

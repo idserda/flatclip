@@ -12,7 +12,7 @@ FlatClip runs quietly in the system tray and remembers everything you copy: text
 
 - **Clipboard history**: text, rich text, images and files, kept for a configurable number of days (default 7)
 - **Instant search**: the search box is focused as soon as the popup opens; multiple words must all match
-- **Paste with or without formatting**: `Enter` pastes as copied, `Alt+Enter` pastes plain text
+- **Paste with or without formatting**: `Enter` pastes as copied, `Shift+Enter` pastes plain text
 - **Snippets**: named, reusable texts (e.g. `email` → your email address) that never expire and show up at the top of search results
 - **Pinning**: pinned history items never expire
 - **Configurable hotkey**: default `Alt+Shift+V`
@@ -31,7 +31,7 @@ FlatClip runs quietly in the system tray and remembers everything you copy: text
 | *type* | Search |
 | `↑` `↓` `PgUp` `PgDn` | Navigate |
 | `Enter` / double-click | Paste |
-| `Alt+Enter` | Paste without formatting |
+| `Shift+Enter` | Paste without formatting |
 | `Tab` | Switch between *History* and *Snippets* |
 | `Ctrl+P` | Pin / unpin history item |
 | `Ctrl+S` | Save history item as snippet |

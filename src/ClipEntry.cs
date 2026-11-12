@@ -154,7 +154,7 @@ namespace FlatClip
             {
                 bool hit = (Text != null && Text.IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0)
                         || (Source != null && Source.IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0)
-                        || (Kind == ClipKind.Image && ("image afbeelding".IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0));
+                        || (Kind == ClipKind.Image && L.T("Image").IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0);
                 if (!hit) return false;
             }
             return true;
