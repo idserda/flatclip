@@ -25,6 +25,7 @@ namespace FlatClip
         readonly ListCollectionView historyView, snippetView;
         readonly IntPtr hwnd;
         IntPtr previousWindow;
+        System.Drawing.Rectangle targetArea;
         string[] terms = new string[0];
         Mode mode = Mode.History;
         bool pasting, editorOpen;
@@ -81,7 +82,7 @@ namespace FlatClip
             win.Deactivated += (s, e) => { if (!pasting && !editorOpen) Hide(); };
             list.MouseDoubleClick += (s, e) =>
             {
-                if (ItemUnderMouse(e) != null) Paste(list.SelectedItem, Keyboard.Modifiers.HasFlag(ModifierKeys.Alt));
+                if (ItemUnderMouse(e) != null) Paste(list.SelectedItem, PlainModifier(Keyboard.Modifiers));
             };
             // Keep typing going to the search box after clicking an item.
             list.PreviewMouseLeftButtonUp += (s, e) => win.Dispatcher.BeginInvoke(new Action(() => search.Focus()));
@@ -129,6 +130,7 @@ namespace FlatClip
 
             PositionOnActiveScreen();
             win.Show();
+            CenterOnTargetScreen();   // again, in case the DPI change only came through when the window was shown
             win.Activate();
             Native.SetForegroundWindow(hwnd);
             search.Focus();
@@ -160,15 +162,26 @@ namespace FlatClip
             UpdateStatus();
         }
 
+        /// <summary>
+        /// Centers the popup on the screen with the mouse cursor. Works in physical pixels: the app is
+        /// per-monitor DPI aware, so every screen can have its own scale.
+        /// </summary>
         void PositionOnActiveScreen()
         {
-            var screen = WinForms.Screen.FromPoint(WinForms.Cursor.Position).WorkingArea;
-            double scale;
-            using (var g = System.Drawing.Graphics.FromHwnd(IntPtr.Zero)) scale = g.DpiX / 96.0;
-            var left = screen.Left / scale + (screen.Width / scale - win.Width) / 2;
-            var top = screen.Top / scale + (screen.Height / scale - win.Height) / 2.6;
-            win.Left = Math.Round(left);
-            win.Top = Math.Round(Math.Max(screen.Top / scale, top));
+            targetArea = WinForms.Screen.FromPoint(WinForms.Cursor.Position).WorkingArea;
+            // Move onto the target screen first: if its DPI differs, WPF rescales the window right here,
+            // and the centering below uses the size the window really has on that screen.
+            Native.SetWindowPos(hwnd, IntPtr.Zero, targetArea.Left, targetArea.Top, 0, 0, Native.SWP_MOVEONLY);
+            CenterOnTargetScreen();
+        }
+
+        void CenterOnTargetScreen()
+        {
+            if (!Native.GetWindowRect(hwnd, out var r)) return;
+            int w = r.Right - r.Left, h = r.Bottom - r.Top;
+            int x = targetArea.Left + (targetArea.Width - w) / 2;
+            int y = Math.Max(targetArea.Top, targetArea.Top + (int)((targetArea.Height - h) / 2.6));
+            Native.SetWindowPos(hwnd, IntPtr.Zero, x, y, 0, 0, Native.SWP_MOVEONLY);
         }
 
         void OnKeyDown(object sender, KeyEventArgs e)
@@ -185,7 +198,7 @@ namespace FlatClip
                 case Key.Escape:
                     Hide(); e.Handled = true; break;
                 case Key.Enter:
-                    Paste(selected, plain: mods.HasFlag(ModifierKeys.Alt)); e.Handled = true; break;
+                    Paste(selected, plain: PlainModifier(mods)); e.Handled = true; break;
                 case Key.Tab:
                     SetMode(mode == Mode.History ? Mode.Snippets : Mode.History); e.Handled = true; break;
                 case Key.Down: Select(list.SelectedIndex + 1); e.Handled = true; break;
@@ -239,6 +252,10 @@ namespace FlatClip
                     break;
             }
         }
+
+        /// <summary>Shift pastes without formatting (Alt still works too, that was the old shortcut).</summary>
+        static bool PlainModifier(ModifierKeys mods) =>
+            mods.HasFlag(ModifierKeys.Shift) || mods.HasFlag(ModifierKeys.Alt);
 
         void ClearPendingDelete()
         {
@@ -296,7 +313,13 @@ namespace FlatClip
             {
                 win.Hide();
                 bool ok = item is Snippet sn ? ClipboardIO.SetText(sn.Content) : ClipboardIO.Set((ClipEntry)item, plain);
-                if (!ok) return;
+                if (!ok)
+                {
+                    // Clipboard stayed locked by another app, or the image file is gone.
+                    App.Log("Paste failed: could not put the item on the clipboard.");
+                    System.Media.SystemSounds.Beep.Play();
+                    return;
+                }
                 if (item is ClipEntry entry) store.Touch(entry);
                 if (previousWindow != IntPtr.Zero && Native.IsWindow(previousWindow))
                     Native.SetForegroundWindow(previousWindow);

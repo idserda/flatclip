@@ -59,7 +59,7 @@
               <StackPanel x:Name="HistoryHints" Orientation="Horizontal">
                 <Border Style="{StaticResource Kbd}"><TextBlock Text="Enter" Style="{StaticResource KbdText}"/></Border>
                 <TextBlock Text="{{HintPaste}}" Style="{StaticResource Hint}"/>
-                <Border Style="{StaticResource Kbd}"><TextBlock Text="Alt+Enter" Style="{StaticResource KbdText}"/></Border>
+                <Border Style="{StaticResource Kbd}"><TextBlock Text="Shift+Enter" Style="{StaticResource KbdText}"/></Border>
                 <TextBlock Text="{{HintPlain}}" Style="{StaticResource Hint}"/>
                 <Border Style="{StaticResource Kbd}"><TextBlock Text="Ctrl+P" Style="{StaticResource KbdText}"/></Border>
                 <TextBlock Text="{{HintPin}}" Style="{StaticResource Hint}"/>

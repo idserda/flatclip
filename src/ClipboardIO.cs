@@ -32,7 +32,7 @@ namespace FlatClip
                 try { data = Clipboard.GetDataObject(); }
                 catch { Thread.Sleep(40); }
             }
-            if (data == null) return null;
+            if (data == null) { App.Log("Capture skipped: clipboard stayed locked by another app."); return null; }
 
             try
             {
@@ -43,7 +43,7 @@ namespace FlatClip
                     if (BitConverter.ToInt32(b, 0) == 0) return null;
                 }
             }
-            catch { }
+            catch (Exception ex) { App.Log(ex); }
 
             var now = DateTime.UtcNow;
             var e = new ClipEntry { Id = Guid.NewGuid().ToString("N"), CreatedTicks = now.Ticks, LastCopiedTicks = now.Ticks, Source = source };
@@ -60,7 +60,7 @@ namespace FlatClip
                     return e;
                 }
             }
-            catch { }
+            catch (Exception ex) { App.Log(ex); }
 
             // 2. Text (+ RTF / HTML if available)
             string text = null;
@@ -69,14 +69,14 @@ namespace FlatClip
                 if (data.GetDataPresent(DataFormats.UnicodeText)) text = data.GetData(DataFormats.UnicodeText) as string;
                 else if (data.GetDataPresent(DataFormats.Text)) text = data.GetData(DataFormats.Text) as string;
             }
-            catch { }
+            catch (Exception ex) { App.Log(ex); }
 
             if (!string.IsNullOrWhiteSpace(text) && text.Length <= MaxText)
             {
                 e.Kind = ClipKind.Text;
                 e.Text = text;
-                try { if (data.GetDataPresent(DataFormats.Rtf) && data.GetData(DataFormats.Rtf) is string rtf && rtf.Length <= MaxRich) e.Rtf = rtf; } catch { }
-                try { if (data.GetDataPresent(DataFormats.Html) && data.GetData(DataFormats.Html) is string html && html.Length <= MaxRich) e.Html = html; } catch { }
+                try { if (data.GetDataPresent(DataFormats.Rtf) && data.GetData(DataFormats.Rtf) is string rtf && rtf.Length <= MaxRich) e.Rtf = rtf; } catch (Exception ex) { App.Log(ex); }
+                try { if (data.GetDataPresent(DataFormats.Html) && data.GetData(DataFormats.Html) is string html && html.Length <= MaxRich) e.Html = html; } catch (Exception ex) { App.Log(ex); }
                 e.Hash = Hash("T:" + text);
                 return e;
             }
@@ -94,7 +94,7 @@ namespace FlatClip
                     png = ms.ToArray(); w = frame.PixelWidth; h = frame.PixelHeight;
                 }
             }
-            catch { png = null; }
+            catch (Exception ex) { App.Log(ex); png = null; }
 
             if (png == null)
             {
@@ -113,7 +113,7 @@ namespace FlatClip
                         }
                     }
                 }
-                catch { }
+                catch (Exception ex) { App.Log(ex); }
             }
 
             if (png != null && png.Length <= MaxImage)

@@ -55,9 +55,12 @@ namespace FlatClip
             try
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(FilePath));
-                using (var fs = File.Create(FilePath))
+                // Write to a temp file and swap it in, so a crash halfway never leaves a broken settings file.
+                var tmp = FilePath + ".tmp";
+                using (var fs = File.Create(tmp))
                 using (var w = JsonReaderWriterFactory.CreateJsonWriter(fs, Encoding.UTF8, false, true, "  "))
                     new DataContractJsonSerializer(typeof(AppSettings)).WriteObject(w, this);
+                if (File.Exists(FilePath)) File.Replace(tmp, FilePath, null); else File.Move(tmp, FilePath);
             }
             catch (Exception ex) { App.Log(ex); }
         }

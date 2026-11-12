@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.Serialization.Json;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Threading;
 
 namespace FlatClip
@@ -26,13 +27,17 @@ namespace FlatClip
         string IndexPath => Path.Combine(dir, "history.dat");
         string ImageDir => Path.Combine(dir, "images");
         readonly DispatcherTimer saveTimer;
+        readonly object writeLock = new object();
+
+        /// <summary>Max number of unpinned entries; older ones are dropped.</summary>
+        const int MaxUnpinned = 1000;
 
         public Store()
         {
             Current = this;
             Directory.CreateDirectory(ImageDir);
             saveTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1.5) };
-            saveTimer.Tick += (s, e) => { saveTimer.Stop(); SaveNow(); };
+            saveTimer.Tick += (s, e) => SaveInBackground();
         }
 
         public void Load()
@@ -50,6 +55,8 @@ namespace FlatClip
             {
                 App.Log(ex);
                 try { File.Move(IndexPath, IndexPath + ".corrupt-" + DateTime.Now.ToString("yyyyMMddHHmmss")); } catch { }
+                // Keep the image files: they belong to the entries in the .corrupt backup.
+                return;
             }
 
             // Remove image files that no entry refers to anymore.
@@ -67,9 +74,10 @@ namespace FlatClip
             var existing = Items.FirstOrDefault(x => x.Hash == e.Hash);
             if (existing != null)
             {
-                // Same content copied again: bump it to the top, keep pin state, refresh formats.
-                if (e.Rtf != null) existing.Rtf = e.Rtf;
-                if (e.Html != null) existing.Html = e.Html;
+                // Same content copied again: bump it to the top, keep pin state, take over the new formats
+                // (also when they are gone now, so pasting never brings back formatting that wasn't copied).
+                existing.Rtf = e.Rtf;
+                existing.Html = e.Html;
                 if (!string.IsNullOrEmpty(e.Source)) existing.Source = e.Source;
                 existing.LastCopied = e.LastCopied;
                 existing.InvalidateTitle();
@@ -84,8 +92,16 @@ namespace FlatClip
                         ProtectedData.Protect(e.PendingImage, Entropy, DataProtectionScope.CurrentUser));
                 }
                 Items.Insert(0, e);
+                TrimToMax();
             }
             ScheduleSave();
+        }
+
+        /// <summary>Caps the history so saving (which rewrites the whole file) stays fast. Pinned items don't count.</summary>
+        void TrimToMax()
+        {
+            var unpinned = Items.Where(x => !x.Pinned).ToList();
+            for (int i = MaxUnpinned; i < unpinned.Count; i++) { Items.Remove(unpinned[i]); DeleteImage(unpinned[i]); }
         }
 
         public void Touch(ClipEntry e)
@@ -145,21 +161,51 @@ namespace FlatClip
 
         void ScheduleSave() { saveTimer.Stop(); saveTimer.Start(); }
 
+        /// <summary>Saves synchronously (on exit / logoff); waits for a background save that is still running.</summary>
         public void SaveNow()
+        {
+            var json = Serialize();
+            if (json != null) Write(json);
+        }
+
+        /// <summary>
+        /// Serializes on the UI thread (the entries are only touched there), then encrypts and writes
+        /// on a worker thread so a large history doesn't make the popup stutter.
+        /// </summary>
+        void SaveInBackground()
+        {
+            var json = Serialize();
+            if (json != null) Task.Run(() => Write(json));
+        }
+
+        byte[] Serialize()
         {
             saveTimer.Stop();
             try
             {
                 var ms = new MemoryStream();
                 new DataContractJsonSerializer(typeof(List<ClipEntry>)).WriteObject(ms, Items.ToList());
-                var data = ProtectedData.Protect(ms.ToArray(), Entropy, DataProtectionScope.CurrentUser);
-                var tmp = IndexPath + ".tmp";
-                File.WriteAllBytes(tmp, data);
-                if (File.Exists(IndexPath)) File.Replace(tmp, IndexPath, null);
-                else File.Move(tmp, IndexPath);
+                // Images were written to disk in Add(); the in-memory copy is no longer needed.
                 foreach (var e in Items) e.PendingImage = null;
+                return ms.ToArray();
             }
-            catch (Exception ex) { App.Log(ex); }
+            catch (Exception ex) { App.Log(ex); return null; }
+        }
+
+        void Write(byte[] json)
+        {
+            lock (writeLock)   // one writer at a time, in order; the newest snapshot is always written last
+            {
+                try
+                {
+                    var data = ProtectedData.Protect(json, Entropy, DataProtectionScope.CurrentUser);
+                    var tmp = IndexPath + ".tmp";
+                    File.WriteAllBytes(tmp, data);
+                    if (File.Exists(IndexPath)) File.Replace(tmp, IndexPath, null);
+                    else File.Move(tmp, IndexPath);
+                }
+                catch (Exception ex) { App.Log(ex); }
+            }
         }
     }
 }
