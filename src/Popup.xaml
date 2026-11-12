@@ -1,0 +1,185 @@
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="FlatClip" Width="600" Height="620"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        ResizeMode="NoResize" ShowInTaskbar="False" Topmost="True"
+        FontFamily="{DynamicResource UiFont}" FontSize="13"
+        UseLayoutRounding="True" SnapsToDevicePixels="True">
+  <Grid Margin="20">
+    <!-- shadow lives on its own layer so the content keeps crisp ClearType text -->
+    <Border CornerRadius="12" Background="{DynamicResource BgBrush}">
+      <Border.Effect>
+        <DropShadowEffect BlurRadius="30" ShadowDepth="6" Direction="270" Opacity="0.4" Color="#000000"/>
+      </Border.Effect>
+    </Border>
+
+    <Border CornerRadius="12" Background="{DynamicResource BgBrush}" BorderBrush="{DynamicResource StrokeBrush}" BorderThickness="1">
+      <DockPanel>
+
+        <!-- search -->
+        <Border DockPanel.Dock="Top" Margin="12,12,12,8" Height="46" CornerRadius="9"
+                Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource StrokeBrush}" BorderThickness="1">
+          <Grid>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="42"/>
+              <ColumnDefinition Width="*"/>
+              <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="&#xE721;" FontFamily="{DynamicResource IconFont}" FontSize="15"
+                       Foreground="{DynamicResource MutedBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBlock x:Name="Placeholder" Grid.Column="1" Text="Zoek in je klembordgeschiedenis…" FontSize="14"
+                       Foreground="{DynamicResource MutedBrush}" VerticalAlignment="Center" Margin="2,0,0,0" IsHitTestVisible="False"/>
+            <TextBox x:Name="Search" Grid.Column="1" Style="{StaticResource BareTextBox}" FontSize="14" VerticalAlignment="Center"/>
+            <Button x:Name="SettingsButton" Grid.Column="2" Style="{StaticResource IconButton}" Content="&#xE713;"
+                    Margin="0,0,6,0" ToolTip="Instellingen"/>
+          </Grid>
+        </Border>
+
+        <!-- tabs -->
+        <Grid DockPanel.Dock="Top" Margin="12,0,12,6">
+          <StackPanel Orientation="Horizontal">
+            <RadioButton x:Name="TabHistory" GroupName="Mode" Style="{StaticResource Tab}" Content="Geschiedenis" IsChecked="True"/>
+            <RadioButton x:Name="TabSnippets" GroupName="Mode" Style="{StaticResource Tab}" Content="Snippets"/>
+            <Border Style="{StaticResource Kbd}" Margin="6,0,0,0"><TextBlock Text="Tab" Style="{StaticResource KbdText}"/></Border>
+          </StackPanel>
+          <Button x:Name="NewSnippetButton" Style="{StaticResource LinkButton}" HorizontalAlignment="Right" ToolTip="Ctrl+N">
+            <StackPanel Orientation="Horizontal">
+              <TextBlock Text="&#xE710;" FontFamily="{DynamicResource IconFont}" FontSize="11" VerticalAlignment="Center" Margin="0,1,7,0"/>
+              <TextBlock Text="Nieuw snippet"/>
+            </StackPanel>
+          </Button>
+        </Grid>
+
+        <!-- footer with shortcuts -->
+        <Border DockPanel.Dock="Bottom" BorderBrush="{DynamicResource StrokeBrush}" BorderThickness="0,1,0,0" Padding="16,10">
+          <DockPanel>
+            <TextBlock x:Name="CountText" DockPanel.Dock="Right" FontSize="11" VerticalAlignment="Center"
+                       Foreground="{DynamicResource MutedBrush}"/>
+            <Grid>
+              <StackPanel x:Name="HistoryHints" Orientation="Horizontal">
+                <Border Style="{StaticResource Kbd}"><TextBlock Text="Enter" Style="{StaticResource KbdText}"/></Border>
+                <TextBlock Text="plakken" Style="{StaticResource Hint}"/>
+                <Border Style="{StaticResource Kbd}"><TextBlock Text="Alt+Enter" Style="{StaticResource KbdText}"/></Border>
+                <TextBlock Text="zonder opmaak" Style="{StaticResource Hint}"/>
+                <Border Style="{StaticResource Kbd}"><TextBlock Text="Ctrl+P" Style="{StaticResource KbdText}"/></Border>
+                <TextBlock Text="vastzetten" Style="{StaticResource Hint}"/>
+                <Border Style="{StaticResource Kbd}"><TextBlock Text="Ctrl+S" Style="{StaticResource KbdText}"/></Border>
+                <TextBlock Text="als snippet" Style="{StaticResource Hint}"/>
+              </StackPanel>
+              <StackPanel x:Name="SnippetHints" Orientation="Horizontal" Visibility="Collapsed">
+                <Border Style="{StaticResource Kbd}"><TextBlock Text="Enter" Style="{StaticResource KbdText}"/></Border>
+                <TextBlock Text="plakken" Style="{StaticResource Hint}"/>
+                <Border Style="{StaticResource Kbd}"><TextBlock Text="Ctrl+N" Style="{StaticResource KbdText}"/></Border>
+                <TextBlock Text="nieuw" Style="{StaticResource Hint}"/>
+                <Border Style="{StaticResource Kbd}"><TextBlock Text="Ctrl+E" Style="{StaticResource KbdText}"/></Border>
+                <TextBlock Text="bewerken" Style="{StaticResource Hint}"/>
+                <Border Style="{StaticResource Kbd}"><TextBlock Text="Shift+Del" Style="{StaticResource KbdText}"/></Border>
+                <TextBlock Text="verwijderen" Style="{StaticResource Hint}"/>
+              </StackPanel>
+            </Grid>
+          </DockPanel>
+        </Border>
+
+        <!-- history -->
+        <Grid>
+          <ListBox x:Name="List" Background="Transparent" BorderThickness="0" Padding="0,0,0,6"
+                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                   VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling"
+                   VirtualizingPanel.ScrollUnit="Pixel" FocusVisualStyle="{x:Null}">
+            <ListBox.ItemContainerStyle>
+              <Style TargetType="ListBoxItem">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                <Setter Property="Template">
+                  <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                      <Border x:Name="Bd" Margin="8,1" CornerRadius="8" Background="Transparent">
+                        <Grid>
+                          <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3"/>
+                            <ColumnDefinition Width="*"/>
+                          </Grid.ColumnDefinitions>
+                          <Border x:Name="Bar" CornerRadius="1.5" Margin="0,10" Background="{DynamicResource AccentBrush}" Visibility="Hidden"/>
+                          <ContentPresenter Grid.Column="1" Margin="9,9,12,9"/>
+                        </Grid>
+                      </Border>
+                      <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                          <Setter TargetName="Bd" Property="Background" Value="{DynamicResource HoverBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                          <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SelectedBrush}"/>
+                          <Setter TargetName="Bar" Property="Visibility" Value="Visible"/>
+                        </Trigger>
+                      </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                  </Setter.Value>
+                </Setter>
+              </Style>
+            </ListBox.ItemContainerStyle>
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <Grid>
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="34"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                  </Grid.ColumnDefinitions>
+                  <Border Width="24" Height="24" CornerRadius="6" Background="{DynamicResource SurfaceBrush}"
+                          HorizontalAlignment="Left" VerticalAlignment="Top">
+                    <TextBlock x:Name="GlyphText" Text="{Binding Glyph}" FontFamily="{DynamicResource IconFont}" FontSize="12"
+                               Foreground="{DynamicResource MutedBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                  </Border>
+                  <StackPanel Grid.Column="1">
+                    <TextBlock x:Name="TitleText" Text="{Binding Title}" Foreground="{DynamicResource TextBrush}" TextWrapping="Wrap"
+                               TextTrimming="CharacterEllipsis" LineHeight="19" LineStackingStrategy="BlockLineHeight" MaxHeight="38"/>
+                    <Border Visibility="{Binding IsImage, Converter={StaticResource B2V}}" HorizontalAlignment="Left"
+                            Margin="0,6,0,2" BorderBrush="{DynamicResource StrokeBrush}" BorderThickness="1" CornerRadius="4">
+                      <Image Source="{Binding Thumbnail}" MaxHeight="90" MaxWidth="360" Stretch="Uniform"
+                             RenderOptions.BitmapScalingMode="HighQuality"/>
+                    </Border>
+                    <TextBlock Text="{Binding Meta}" Foreground="{DynamicResource MutedBrush}" FontSize="11" Margin="0,3,0,0"
+                               TextTrimming="CharacterEllipsis"/>
+                  </StackPanel>
+                  <TextBlock Grid.Column="2" Text="&#xE718;" FontFamily="{DynamicResource IconFont}" FontSize="12"
+                             Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Top" Margin="10,4,0,0"
+                             ToolTip="Vastgezet – verloopt niet"
+                             Visibility="{Binding Pinned, Converter={StaticResource B2V}}"/>
+                  <Button x:Name="EditButton" Grid.Column="2" Tag="edit" Style="{StaticResource IconButton}" Content="&#xE70F;"
+                          Width="28" Height="28" FontSize="12" VerticalAlignment="Center" Margin="8,0,0,0"
+                          ToolTip="Bewerken (Ctrl+E)" Visibility="Collapsed"/>
+                </Grid>
+                <DataTemplate.Triggers>
+                  <DataTrigger Binding="{Binding IsSnippet}" Value="True">
+                    <Setter TargetName="GlyphText" Property="Foreground" Value="{DynamicResource AccentBrush}"/>
+                    <Setter TargetName="TitleText" Property="FontWeight" Value="SemiBold"/>
+                  </DataTrigger>
+                  <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                      <Condition Binding="{Binding IsSnippet}" Value="True"/>
+                      <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" Value="True"/>
+                    </MultiDataTrigger.Conditions>
+                    <Setter TargetName="EditButton" Property="Visibility" Value="Visible"/>
+                  </MultiDataTrigger>
+                  <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                      <Condition Binding="{Binding IsSnippet}" Value="True"/>
+                      <Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" Value="True"/>
+                    </MultiDataTrigger.Conditions>
+                    <Setter TargetName="EditButton" Property="Visibility" Value="Visible"/>
+                  </MultiDataTrigger>
+                </DataTemplate.Triggers>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+
+          <StackPanel x:Name="EmptyPanel" VerticalAlignment="Center" HorizontalAlignment="Center" IsHitTestVisible="False">
+            <TextBlock Text="&#xE77F;" FontFamily="{DynamicResource IconFont}" FontSize="34"
+                       Foreground="{DynamicResource ThumbBrush}" HorizontalAlignment="Center"/>
+            <TextBlock x:Name="EmptyText" Foreground="{DynamicResource MutedBrush}" Margin="0,12,0,0" HorizontalAlignment="Center"/>
+          </StackPanel>
+        </Grid>
+      </DockPanel>
+    </Border>
+  </Grid>
+</Window>

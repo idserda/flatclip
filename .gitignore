@@ -1,0 +1,11 @@
+# Build output
+bin/
+obj/
+
+# Editor / OS clutter
+.vs/
+.vscode/
+*.user
+*.suo
+Thumbs.db
+desktop.ini
