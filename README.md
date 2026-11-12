@@ -36,7 +36,11 @@ FlatClip runs quietly in the system tray and remembers everything you copy: text
 | `Shift+Del` | Delete item (press twice for snippets) |
 | `Esc` | Close |
 
-The UI is in Dutch.
+## Language
+
+The UI is in English, or in Dutch when the Windows display language is Dutch. To override this, set `"Language"` in `settings.json` to `"en"` or `"nl"` (default `"auto"`) and restart FlatClip.
+
+Translations live in `src/Strings.cs`. To add a language, add a column there. XAML files use `{{Key}}` placeholders.
 
 ## Building
 
@@ -84,6 +88,7 @@ src/
   SettingsController.cs  settings window
   SnippetEditor.cs       snippet create/edit dialog
   Settings.cs            settings, hotkey parsing, autostart, theming
+  Strings.cs             UI strings (English / Dutch)
   Native.cs              Win32 interop (hotkeys, SendInput, clipboard listener)
   *.xaml                 UI (loaded at runtime)
 tools/MakeIcon.cs        generates the .ico at build time

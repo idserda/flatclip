@@ -14,7 +14,6 @@ namespace FlatClip
     [DataContract]
     public class ClipEntry : INotifyPropertyChanged
     {
-        static readonly CultureInfo Nl = new CultureInfo("nl-NL");
         static readonly Regex Whitespace = new Regex(@"\s+", RegexOptions.Compiled);
 
         [DataMember] public string Id { get; set; }
@@ -76,7 +75,7 @@ namespace FlatClip
                 if (title != null) return title;
                 switch (Kind)
                 {
-                    case ClipKind.Image: title = "Afbeelding"; break;
+                    case ClipKind.Image: title = L.T("Image"); break;
                     case ClipKind.Files:
                         title = string.Join(", ", (Files ?? new string[0]).Select(f => Path.GetFileName(f.TrimEnd('\\')) is var n && n.Length > 0 ? n : f));
                         break;
@@ -101,11 +100,11 @@ namespace FlatClip
                     case ClipKind.Image: parts.Add($"{ImageWidth} × {ImageHeight}"); break;
                     case ClipKind.Files:
                         var n = Files?.Length ?? 0;
-                        parts.Add(n == 1 ? "1 bestand" : $"{n} bestanden");
+                        parts.Add(n == 1 ? L.T("OneFile") : L.F("NFiles", n));
                         break;
                     default:
-                        if (HasFormatting) parts.Add("opmaak");
-                        if (Text != null && Text.Length > 200) parts.Add($"{Text.Length:N0} tekens".Replace(",", "."));
+                        if (HasFormatting) parts.Add(L.T("Formatted"));
+                        if (Text != null && Text.Length > 200) parts.Add(L.F("NChars", Text.Length.ToString("N0", L.Culture)));
                         break;
                 }
                 parts.Add(RelativeTime(LastCopied.ToLocalTime()));
@@ -117,12 +116,12 @@ namespace FlatClip
         {
             var now = DateTime.Now;
             var diff = now - t;
-            if (diff.TotalMinutes < 1) return "zojuist";
-            if (diff.TotalMinutes < 60) return $"{(int)diff.TotalMinutes} min geleden";
-            if (t.Date == now.Date) return "vandaag " + t.ToString("HH:mm", Nl);
-            if (t.Date == now.Date.AddDays(-1)) return "gisteren " + t.ToString("HH:mm", Nl);
-            if (diff.TotalDays < 6) return t.ToString("ddd HH:mm", Nl);
-            return t.ToString("d MMM HH:mm", Nl);
+            if (diff.TotalMinutes < 1) return L.T("JustNow");
+            if (diff.TotalMinutes < 60) return L.F("MinAgo", (int)diff.TotalMinutes);
+            if (t.Date == now.Date) return L.F("Today", t.ToString("HH:mm", L.Culture));
+            if (t.Date == now.Date.AddDays(-1)) return L.F("Yesterday", t.ToString("HH:mm", L.Culture));
+            if (diff.TotalDays < 6) return t.ToString("ddd HH:mm", L.Culture);
+            return t.ToString("d MMM HH:mm", L.Culture);
         }
 
         BitmapImage thumbnail;
@@ -155,7 +154,7 @@ namespace FlatClip
             {
                 bool hit = (Text != null && Text.IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0)
                         || (Source != null && Source.IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0)
-                        || (Kind == ClipKind.Image && ("afbeelding image".IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0));
+                        || (Kind == ClipKind.Image && ("image afbeelding".IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0));
                 if (!hit) return false;
             }
             return true;

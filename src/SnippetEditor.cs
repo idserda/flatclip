@@ -18,7 +18,7 @@ namespace FlatClip
             var deleteButton = Find<Button>("DeleteButton");
             Snippet result = null;
 
-            Find<TextBlock>("HeaderText").Text = existing == null ? "Nieuw snippet" : "Snippet bewerken";
+            Find<TextBlock>("HeaderText").Text = L.T(existing == null ? "NewSnippet" : "EditSnippet");
             deleteButton.Visibility = existing == null ? Visibility.Collapsed : Visibility.Visible;
             nameBox.Text = existing?.Name ?? "";
             contentBox.Text = existing?.Content ?? prefill ?? "";
@@ -26,8 +26,8 @@ namespace FlatClip
             void Save()
             {
                 var name = nameBox.Text.Trim();
-                if (name.Length == 0) { error.Text = "Geef het snippet een naam."; error.Visibility = Visibility.Visible; nameBox.Focus(); return; }
-                if (contentBox.Text.Length == 0) { error.Text = "De inhoud is leeg."; error.Visibility = Visibility.Visible; contentBox.Focus(); return; }
+                if (name.Length == 0) { error.Text = L.T("NeedName"); error.Visibility = Visibility.Visible; nameBox.Focus(); return; }
+                if (contentBox.Text.Length == 0) { error.Text = L.T("EmptyContent"); error.Visibility = Visibility.Visible; contentBox.Focus(); return; }
                 var s = existing ?? new Snippet();
                 s.Name = name;
                 s.Content = contentBox.Text;
@@ -42,7 +42,7 @@ namespace FlatClip
             Find<Button>("SaveButton").Click += (o, e) => Save();
             deleteButton.Click += (o, e) =>
             {
-                if (MessageBox.Show(win, $"Snippet \"{existing.Name}\" verwijderen?", "FlatClip",
+                if (MessageBox.Show(win, L.F("DeleteSnippetConfirm", existing.Name), "FlatClip",
                         MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) != MessageBoxResult.Yes) return;
                 store.Remove(existing);
                 win.Close();

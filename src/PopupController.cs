@@ -214,7 +214,7 @@ namespace FlatClip
                         else
                         {
                             pendingDelete = sn;   // ask for confirmation by pressing it twice
-                            countText.Text = "Nogmaals Shift+Del om te verwijderen";
+                            countText.Text = L.T("ConfirmDelete");
                             countText.Foreground = (System.Windows.Media.Brush)win.FindResource("DangerBrush");
                         }
                     }
@@ -276,14 +276,14 @@ namespace FlatClip
             if (mode == Mode.Snippets)
             {
                 var total = snippets.Items.Count;
-                countText.Text = terms.Length == 0 ? (total == 1 ? "1 snippet" : $"{total} snippets") : $"{shown} van {total}";
-                emptyText.Text = total == 0 ? "Nog geen snippets – Ctrl+N maakt er een" : "Geen snippets gevonden";
+                countText.Text = terms.Length == 0 ? (total == 1 ? L.T("OneSnippet") : L.F("NSnippets", total)) : L.F("NofM", shown, total);
+                emptyText.Text = L.T(total == 0 ? "NoSnippets" : "NoSnippetsFound");
             }
             else
             {
                 var total = store.Items.Count;
-                countText.Text = terms.Length == 0 ? (total == 1 ? "1 item" : $"{total} items") : (shown == 1 ? "1 resultaat" : $"{shown} resultaten");
-                emptyText.Text = total == 0 ? "Nog niets gekopieerd" : "Geen resultaten";
+                countText.Text = terms.Length == 0 ? (total == 1 ? L.T("OneItem") : L.F("NItems", total)) : (shown == 1 ? L.T("OneResult") : L.F("NResults", shown));
+                emptyText.Text = L.T(total == 0 ? "NothingCopied" : "NoResults");
             }
             emptyPanel.Visibility = shown == 0 ? Visibility.Visible : Visibility.Collapsed;
         }

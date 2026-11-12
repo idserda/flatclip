@@ -63,6 +63,7 @@ namespace FlatClip
             DispatcherUnhandledException += (s, a) => { Log(a.Exception); a.Handled = true; };
 
             Settings = AppSettings.Load();
+            L.Init(Settings.Language);
             Resources.MergedDictionaries.Add(LoadXaml<ResourceDictionary>("Theme.xaml"));
             ThemeManager.Apply(Resources, Settings.Theme);
 
@@ -89,7 +90,7 @@ namespace FlatClip
             CreateTray();
 
             if (!TryRegisterHotkey(Settings.Hotkey))
-                tray.ShowBalloonTip(5000, "FlatClip", $"De sneltoets {Settings.Hotkey} is al in gebruik door een ander programma. Kies een andere via Instellingen.", WinForms.ToolTipIcon.Warning);
+                tray.ShowBalloonTip(5000, "FlatClip", L.F("HotkeyInUse", Settings.Hotkey), WinForms.ToolTipIcon.Warning);
 
             showEvent = new EventWaitHandle(false, EventResetMode.AutoReset, ShowEventName);
             ThreadPool.RegisterWaitForSingleObject(showEvent, (s, t) => Dispatcher.BeginInvoke(new Action(popup.Show)), null, -1, false);
@@ -218,15 +219,15 @@ namespace FlatClip
         void CreateTray()
         {
             var menu = new WinForms.ContextMenuStrip();
-            openItem = new WinForms.ToolStripMenuItem("Openen", null, (s, a) => popup.Show());
+            openItem = new WinForms.ToolStripMenuItem(L.T("TrayOpen"), null, (s, a) => popup.Show());
             openItem.Font = new System.Drawing.Font(openItem.Font, System.Drawing.FontStyle.Bold);
-            pauseItem = new WinForms.ToolStripMenuItem("Opnemen pauzeren") { CheckOnClick = true };
+            pauseItem = new WinForms.ToolStripMenuItem(L.T("TrayPause")) { CheckOnClick = true };
             pauseItem.CheckedChanged += (s, a) => UpdateTrayText();
             menu.Items.Add(openItem);
             menu.Items.Add(pauseItem);
-            menu.Items.Add(new WinForms.ToolStripMenuItem("Instellingen…", null, (s, a) => OpenSettings()));
+            menu.Items.Add(new WinForms.ToolStripMenuItem(L.T("TraySettings"), null, (s, a) => OpenSettings()));
             menu.Items.Add(new WinForms.ToolStripSeparator());
-            menu.Items.Add(new WinForms.ToolStripMenuItem("Afsluiten", null, (s, a) => Quit()));
+            menu.Items.Add(new WinForms.ToolStripMenuItem(L.T("TrayExit"), null, (s, a) => Quit()));
 
             tray = new WinForms.NotifyIcon { Icon = LoadTrayIcon(), ContextMenuStrip = menu, Visible = true };
             tray.MouseClick += (s, a) => { if (a.Button == WinForms.MouseButtons.Left) popup.Show(); };
@@ -237,8 +238,8 @@ namespace FlatClip
         {
             if (tray == null) return;
             var hk = registeredHotkey ?? Settings.Hotkey;
-            openItem.Text = $"Openen\t{hk}";
-            var text = pauseItem.Checked ? "FlatClip – gepauzeerd" : $"FlatClip – {hk}";
+            openItem.Text = $"{L.T("TrayOpen")}\t{hk}";
+            var text = pauseItem.Checked ? L.T("TrayPaused") : $"FlatClip – {hk}";
             tray.Text = text.Length > 63 ? text.Substring(0, 63) : text;
         }
 
@@ -270,7 +271,8 @@ namespace FlatClip
         public static T LoadXaml<T>(string name)
         {
             using (var s = Assembly.GetExecutingAssembly().GetManifestResourceStream("FlatClip." + name))
-                return (T)XamlReader.Load(s);
+            using (var r = new StreamReader(s))
+                return (T)XamlReader.Parse(L.Localize(r.ReadToEnd()));
         }
 
         public static void Log(Exception ex)

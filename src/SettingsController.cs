@@ -49,7 +49,7 @@ namespace FlatClip
             Find<Button>("ClearButton").Click += (o, e) => Clear();
 
             // While the hotkey field has focus the global hotkey is suspended, so it can be pressed here.
-            hotkeyBox.GotKeyboardFocus += (o, e) => { app.SuspendHotkey(); hotkeyBox.Text = "Druk op een toetscombinatie…"; };
+            hotkeyBox.GotKeyboardFocus += (o, e) => { app.SuspendHotkey(); hotkeyBox.Text = L.T("PressKeys"); };
             hotkeyBox.LostKeyboardFocus += (o, e) => { hotkeyBox.Text = pendingHotkey; app.ResumeHotkey(); };
             hotkeyBox.PreviewKeyDown += CaptureHotkey;
 
@@ -76,7 +76,7 @@ namespace FlatClip
             bool isFunctionKey = key >= Key.F1 && key <= Key.F24;
             if (mods == ModifierKeys.None && !isFunctionKey)
             {
-                ShowError("Gebruik minimaal één van Ctrl, Alt, Shift of Win (of een F-toets).");
+                ShowError(L.T("NeedModifier"));
                 return;
             }
             errorText.Visibility = Visibility.Collapsed;
@@ -89,12 +89,12 @@ namespace FlatClip
             errorText.Visibility = Visibility.Collapsed;
             if (!int.TryParse(daysBox.Text, out int days) || days < 1 || days > 3650)
             {
-                ShowError("De bewaartermijn moet tussen 1 en 3650 dagen liggen.");
+                ShowError(L.T("RetentionRange"));
                 return;
             }
             if (!app.TryRegisterHotkey(pendingHotkey))
             {
-                ShowError($"De sneltoets {pendingHotkey} kan niet worden gebruikt; waarschijnlijk is hij al in gebruik door een ander programma.");
+                ShowError(L.F("HotkeyUnavailable", pendingHotkey));
                 return;
             }
             var theme = themeLight.IsChecked == true ? "Light" : themeSystem.IsChecked == true ? "System" : "Dark";
@@ -104,8 +104,7 @@ namespace FlatClip
 
         void Clear()
         {
-            var r = MessageBox.Show(win, "Weet je zeker dat je de hele geschiedenis wilt wissen?\n\nVastgezette items blijven bewaard.",
-                "FlatClip", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
+            var r = MessageBox.Show(win, L.T("ClearConfirm"), "FlatClip", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
             if (r == MessageBoxResult.Yes) app.ClearHistory();
         }
 

@@ -1,6 +1,6 @@
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="FlatClip – Instellingen" Width="520" SizeToContent="Height"
+        Title="{{SettingsTitle}}" Width="520" SizeToContent="Height"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         ResizeMode="NoResize" ShowInTaskbar="True" WindowStartupLocation="CenterScreen" Topmost="True"
         FontFamily="{DynamicResource UiFont}" FontSize="13"
@@ -17,38 +17,38 @@
           <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="22,0,0,0">
             <TextBlock Text="&#xE713;" FontFamily="{DynamicResource IconFont}" FontSize="15" Foreground="{DynamicResource AccentBrush}"
                        VerticalAlignment="Center" Margin="0,1,10,0"/>
-            <TextBlock Text="Instellingen" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource TextBrush}"/>
+            <TextBlock Text="{{Settings}}" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource TextBrush}"/>
           </StackPanel>
           <Button x:Name="CloseButton" Style="{StaticResource IconButton}" Content="&#xE711;" FontSize="11"
                   HorizontalAlignment="Right" Margin="0,0,12,0"/>
         </Grid>
 
         <StackPanel Margin="22,4,22,0">
-          <TextBlock Text="Sneltoets" Style="{StaticResource Label}"/>
-          <TextBlock Text="Klik in het veld en druk de gewenste toetscombinatie in." Style="{StaticResource Desc}"/>
+          <TextBlock Text="{{Hotkey}}" Style="{StaticResource Label}"/>
+          <TextBlock Text="{{HotkeyDesc}}" Style="{StaticResource Desc}"/>
           <TextBox x:Name="HotkeyBox" Style="{StaticResource Field}" IsReadOnly="True" IsReadOnlyCaretVisible="False" Cursor="Hand"/>
 
-          <TextBlock Text="Geschiedenis bewaren" Style="{StaticResource Label}" Margin="0,22,0,0"/>
-          <TextBlock Text="Items die langer geleden gekopieerd zijn worden automatisch verwijderd. Vastgezette items blijven altijd staan." Style="{StaticResource Desc}"/>
+          <TextBlock Text="{{KeepHistory}}" Style="{StaticResource Label}" Margin="0,22,0,0"/>
+          <TextBlock Text="{{KeepHistoryDesc}}" Style="{StaticResource Desc}"/>
           <StackPanel Orientation="Horizontal">
             <TextBox x:Name="DaysBox" Style="{StaticResource Field}" Width="80" MaxLength="4" HorizontalContentAlignment="Center"/>
-            <TextBlock Text="dagen" Foreground="{DynamicResource MutedBrush}" VerticalAlignment="Center" Margin="10,0,0,0"/>
+            <TextBlock Text="{{Days}}" Foreground="{DynamicResource MutedBrush}" VerticalAlignment="Center" Margin="10,0,0,0"/>
           </StackPanel>
 
-          <TextBlock Text="Thema" Style="{StaticResource Label}" Margin="0,22,0,10"/>
+          <TextBlock Text="{{Theme}}" Style="{StaticResource Label}" Margin="0,22,0,10"/>
           <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource StrokeBrush}" BorderThickness="1"
                   CornerRadius="8" Padding="3" HorizontalAlignment="Left">
             <StackPanel Orientation="Horizontal">
-              <RadioButton x:Name="ThemeDark" GroupName="Theme" Style="{StaticResource Segment}" Content="Donker"/>
-              <RadioButton x:Name="ThemeLight" GroupName="Theme" Style="{StaticResource Segment}" Content="Licht"/>
-              <RadioButton x:Name="ThemeSystem" GroupName="Theme" Style="{StaticResource Segment}" Content="Systeem"/>
+              <RadioButton x:Name="ThemeDark" GroupName="Theme" Style="{StaticResource Segment}" Content="{{ThemeDark}}"/>
+              <RadioButton x:Name="ThemeLight" GroupName="Theme" Style="{StaticResource Segment}" Content="{{ThemeLight}}"/>
+              <RadioButton x:Name="ThemeSystem" GroupName="Theme" Style="{StaticResource Segment}" Content="{{ThemeSystem}}"/>
             </StackPanel>
           </Border>
 
           <CheckBox x:Name="AutoStart" Style="{StaticResource Toggle}" Margin="0,24,0,0">
             <StackPanel>
-              <TextBlock Text="Starten met Windows" Style="{StaticResource Label}"/>
-              <TextBlock Text="FlatClip draait dan op de achtergrond in het systeemvak." Style="{StaticResource Desc}" Margin="0,2,0,0"/>
+              <TextBlock Text="{{StartWithWindows}}" Style="{StaticResource Label}"/>
+              <TextBlock Text="{{StartWithWindowsDesc}}" Style="{StaticResource Desc}" Margin="0,2,0,0"/>
             </StackPanel>
           </CheckBox>
 
@@ -60,12 +60,12 @@
             <Button x:Name="ClearButton" Style="{StaticResource DangerButton}" DockPanel.Dock="Left">
               <StackPanel Orientation="Horizontal">
                 <TextBlock Text="&#xE74D;" FontFamily="{DynamicResource IconFont}" VerticalAlignment="Center" Margin="0,1,8,0"/>
-                <TextBlock Text="Geschiedenis wissen"/>
+                <TextBlock Text="{{ClearHistory}}"/>
               </StackPanel>
             </Button>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-              <Button x:Name="CancelButton" Style="{StaticResource FlatButton}" Content="Annuleren" Margin="0,0,8,0"/>
-              <Button x:Name="SaveButton" Style="{StaticResource AccentButton}" Content="Opslaan" IsDefault="True"/>
+              <Button x:Name="CancelButton" Style="{StaticResource FlatButton}" Content="{{Cancel}}" Margin="0,0,8,0"/>
+              <Button x:Name="SaveButton" Style="{StaticResource AccentButton}" Content="{{Save}}" IsDefault="True"/>
             </StackPanel>
           </DockPanel>
         </Border>

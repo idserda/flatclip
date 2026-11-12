@@ -17,6 +17,7 @@ namespace FlatClip
         [DataMember] public string Hotkey { get; set; }
         [DataMember] public int RetentionDays { get; set; }
         [DataMember] public string Theme { get; set; }   // Dark | Light | System
+        [DataMember] public string Language { get; set; }   // auto | en | nl
 
         public AppSettings() { SetDefaults(); }
 
@@ -27,6 +28,7 @@ namespace FlatClip
             Hotkey = "Alt+Shift+V";
             RetentionDays = 7;
             Theme = "Dark";
+            Language = "auto";
         }
 
         static string FilePath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FlatClip", "settings.json");
