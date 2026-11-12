@@ -4,6 +4,10 @@ A lightweight, keyboard-driven clipboard manager for Windows with a flat design 
 
 FlatClip runs quietly in the system tray and remembers everything you copy: text (including rich text / HTML formatting), images and files copied in Explorer. Press a hotkey, type to search, hit Enter to paste.
 
+<p align="center">
+  <img src="docs/screenshot.png" alt="FlatClip popup with clipboard history" width="575">
+</p>
+
 ## Features
 
 - **Clipboard history**: text, rich text, images and files, kept for a configurable number of days (default 7)
