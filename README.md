@@ -1,6 +1,6 @@
 # FlatClip
 
-A lightweight, keyboard-driven clipboard manager for Windows 10/11 with a flat design and dark mode.
+A lightweight, keyboard-driven clipboard manager for Windows with a flat design and dark mode.
 
 FlatClip runs quietly in the system tray and remembers everything you copy: text (including rich text / HTML formatting), images and files copied in Explorer. Press a hotkey, type to search, hit Enter to paste.
 
@@ -89,3 +89,7 @@ src/
 tools/MakeIcon.cs        generates the .ico at build time
 build.ps1                build script
 ```
+
+## License
+
+[MIT](LICENSE)
