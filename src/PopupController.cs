@@ -110,8 +110,41 @@ namespace FlatClip
 
         public void Show() => Show(keepTarget: false, select: null);
 
+        bool prewarming;
+
+        /// <summary>
+        /// Shows the popup once, invisible and off-screen, so the first real open doesn't pay for layout,
+        /// template creation, render pipeline setup, thumbnail decoding and JIT compilation.
+        /// </summary>
+        public void Prewarm()
+        {
+            if (win.IsVisible) return;
+            prewarming = true;
+            Refresh();
+            win.ShowActivated = false;
+            win.Opacity = 0;
+            Native.SetWindowPos(hwnd, IntPtr.Zero, -32000, -32000, 0, 0, Native.SWP_MOVEONLY);
+            win.Show();
+            win.UpdateLayout();
+            // Hide again once a frame has been rendered.
+            win.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.ContextIdle, new Action(() =>
+            {
+                if (!prewarming) return;   // a real Show() came in meanwhile
+                EndPrewarm();
+                win.Hide();
+            }));
+        }
+
+        void EndPrewarm()
+        {
+            prewarming = false;
+            win.Opacity = 1;
+            win.ShowActivated = true;
+        }
+
         void Show(bool keepTarget, object select)
         {
+            if (prewarming) EndPrewarm();
             if (!keepTarget)
             {
                 var fg = Native.GetForegroundWindow();

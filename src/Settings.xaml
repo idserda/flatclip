@@ -18,6 +18,8 @@
             <TextBlock Text="&#xE713;" FontFamily="{DynamicResource IconFont}" FontSize="15" Foreground="{DynamicResource AccentBrush}"
                        VerticalAlignment="Center" Margin="0,1,10,0"/>
             <TextBlock Text="{{Settings}}" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource TextBrush}"/>
+            <TextBlock x:Name="VersionText" FontSize="12" Foreground="{DynamicResource MutedBrush}"
+                       VerticalAlignment="Center" Margin="10,2,0,0"/>
           </StackPanel>
           <Button x:Name="CloseButton" Style="{StaticResource IconButton}" Content="&#xE711;" FontSize="11"
                   HorizontalAlignment="Right" Margin="0,0,12,0"/>

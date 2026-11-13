@@ -115,10 +115,11 @@
     <Setter Property="Cursor" Value="Hand"/>
     <Setter Property="Focusable" Value="False"/>
     <Setter Property="FontSize" Value="12"/>
+    <Setter Property="Padding" Value="11,5"/>
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="RadioButton">
-          <Border x:Name="Bd" Background="Transparent" CornerRadius="6" Padding="11,5" Margin="0,0,2,0">
+          <Border x:Name="Bd" Background="Transparent" CornerRadius="6" Padding="{TemplateBinding Padding}" Margin="0,0,2,0">
             <ContentPresenter VerticalAlignment="Center"/>
           </Border>
           <ControlTemplate.Triggers>
