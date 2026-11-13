@@ -17,29 +17,29 @@
       <DockPanel>
 
         <!-- search -->
-        <Border DockPanel.Dock="Top" Margin="12,12,12,8" Height="46" CornerRadius="9"
+        <Border DockPanel.Dock="Top" Margin="10,10,10,6" Height="36" CornerRadius="8"
                 Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource StrokeBrush}" BorderThickness="1">
           <Grid>
             <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="42"/>
+              <ColumnDefinition Width="34"/>
               <ColumnDefinition Width="*"/>
               <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <TextBlock Text="&#xE721;" FontFamily="{DynamicResource IconFont}" FontSize="15"
+            <TextBlock Text="&#xE721;" FontFamily="{DynamicResource IconFont}" FontSize="13"
                        Foreground="{DynamicResource MutedBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <TextBlock x:Name="Placeholder" Grid.Column="1" Text="{{SearchPlaceholder}}" FontSize="14"
+            <TextBlock x:Name="Placeholder" Grid.Column="1" Text="{{SearchPlaceholder}}" FontSize="13"
                        Foreground="{DynamicResource MutedBrush}" VerticalAlignment="Center" Margin="2,0,0,0" IsHitTestVisible="False"/>
-            <TextBox x:Name="Search" Grid.Column="1" Style="{StaticResource BareTextBox}" FontSize="14" VerticalAlignment="Center"/>
+            <TextBox x:Name="Search" Grid.Column="1" Style="{StaticResource BareTextBox}" FontSize="13" VerticalAlignment="Center"/>
             <Button x:Name="SettingsButton" Grid.Column="2" Style="{StaticResource IconButton}" Content="&#xE713;"
-                    Margin="0,0,6,0" ToolTip="{{Settings}}"/>
+                    Width="28" Height="28" FontSize="13" Margin="0,0,4,0" ToolTip="{{Settings}}"/>
           </Grid>
         </Border>
 
         <!-- tabs -->
-        <Grid DockPanel.Dock="Top" Margin="12,0,12,6">
+        <Grid DockPanel.Dock="Top" Margin="10,0,10,4">
           <StackPanel Orientation="Horizontal">
-            <RadioButton x:Name="TabHistory" GroupName="Mode" Style="{StaticResource Tab}" Content="{{TabHistory}}" IsChecked="True"/>
-            <RadioButton x:Name="TabSnippets" GroupName="Mode" Style="{StaticResource Tab}" Content="{{TabSnippets}}"/>
+            <RadioButton x:Name="TabHistory" GroupName="Mode" Style="{StaticResource Tab}" Padding="9,3" Content="{{TabHistory}}" IsChecked="True"/>
+            <RadioButton x:Name="TabSnippets" GroupName="Mode" Style="{StaticResource Tab}" Padding="9,3" Content="{{TabSnippets}}"/>
             <Border Style="{StaticResource Kbd}" Margin="6,0,0,0"><TextBlock Text="Tab" Style="{StaticResource KbdText}"/></Border>
           </StackPanel>
           <Button x:Name="NewSnippetButton" Style="{StaticResource LinkButton}" HorizontalAlignment="Right" ToolTip="Ctrl+N">
@@ -51,7 +51,7 @@
         </Grid>
 
         <!-- footer with shortcuts -->
-        <Border DockPanel.Dock="Bottom" BorderBrush="{DynamicResource StrokeBrush}" BorderThickness="0,1,0,0" Padding="16,10">
+        <Border DockPanel.Dock="Bottom" BorderBrush="{DynamicResource StrokeBrush}" BorderThickness="0,1,0,0" Padding="14,7">
           <DockPanel>
             <TextBlock x:Name="CountText" DockPanel.Dock="Right" FontSize="11" VerticalAlignment="Center"
                        Foreground="{DynamicResource MutedBrush}"/>
@@ -93,14 +93,14 @@
                 <Setter Property="Template">
                   <Setter.Value>
                     <ControlTemplate TargetType="ListBoxItem">
-                      <Border x:Name="Bd" Margin="8,1" CornerRadius="8" Background="Transparent">
+                      <Border x:Name="Bd" Margin="6,0" CornerRadius="6" Background="Transparent">
                         <Grid>
                           <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="3"/>
                             <ColumnDefinition Width="*"/>
                           </Grid.ColumnDefinitions>
-                          <Border x:Name="Bar" CornerRadius="1.5" Margin="0,10" Background="{DynamicResource AccentBrush}" Visibility="Hidden"/>
-                          <ContentPresenter Grid.Column="1" Margin="9,9,12,9"/>
+                          <Border x:Name="Bar" CornerRadius="1.5" Margin="0,7" Background="{DynamicResource AccentBrush}" Visibility="Hidden"/>
+                          <ContentPresenter Grid.Column="1" Margin="8,5,10,5"/>
                         </Grid>
                       </Border>
                       <ControlTemplate.Triggers>
@@ -121,32 +121,32 @@
               <DataTemplate>
                 <Grid>
                   <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="34"/>
+                    <ColumnDefinition Width="28"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                   </Grid.ColumnDefinitions>
-                  <Border Width="24" Height="24" CornerRadius="6" Background="{DynamicResource SurfaceBrush}"
+                  <Border Width="20" Height="20" CornerRadius="5" Background="{DynamicResource SurfaceBrush}"
                           HorizontalAlignment="Left" VerticalAlignment="Top">
-                    <TextBlock x:Name="GlyphText" Text="{Binding Glyph}" FontFamily="{DynamicResource IconFont}" FontSize="12"
+                    <TextBlock x:Name="GlyphText" Text="{Binding Glyph}" FontFamily="{DynamicResource IconFont}" FontSize="11"
                                Foreground="{DynamicResource MutedBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                   </Border>
                   <StackPanel Grid.Column="1">
-                    <TextBlock x:Name="TitleText" Text="{Binding Title}" Foreground="{DynamicResource TextBrush}" TextWrapping="Wrap"
-                               TextTrimming="CharacterEllipsis" LineHeight="19" LineStackingStrategy="BlockLineHeight" MaxHeight="38"/>
+                    <TextBlock x:Name="TitleText" Text="{Binding Title}" Foreground="{DynamicResource TextBrush}" TextWrapping="NoWrap"
+                               TextTrimming="CharacterEllipsis"/>
                     <Border Visibility="{Binding IsImage, Converter={StaticResource B2V}}" HorizontalAlignment="Left"
-                            Margin="0,6,0,2" BorderBrush="{DynamicResource StrokeBrush}" BorderThickness="1" CornerRadius="4">
-                      <Image Source="{Binding Thumbnail}" MaxHeight="90" MaxWidth="360" Stretch="Uniform"
+                            Margin="0,4,0,1" BorderBrush="{DynamicResource StrokeBrush}" BorderThickness="1" CornerRadius="4">
+                      <Image Source="{Binding Thumbnail}" MaxHeight="60" MaxWidth="240" Stretch="Uniform"
                              RenderOptions.BitmapScalingMode="HighQuality"/>
                     </Border>
-                    <TextBlock Text="{Binding Meta}" Foreground="{DynamicResource MutedBrush}" FontSize="11" Margin="0,3,0,0"
+                    <TextBlock Text="{Binding Meta}" Foreground="{DynamicResource MutedBrush}" FontSize="11" Margin="0,1,0,0"
                                TextTrimming="CharacterEllipsis"/>
                   </StackPanel>
                   <TextBlock Grid.Column="2" Text="&#xE718;" FontFamily="{DynamicResource IconFont}" FontSize="12"
-                             Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Top" Margin="10,4,0,0"
+                             Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Top" Margin="8,2,0,0"
                              ToolTip="{{PinnedTip}}"
                              Visibility="{Binding Pinned, Converter={StaticResource B2V}}"/>
                   <Button x:Name="EditButton" Grid.Column="2" Tag="edit" Style="{StaticResource IconButton}" Content="&#xE70F;"
-                          Width="28" Height="28" FontSize="12" VerticalAlignment="Center" Margin="8,0,0,0"
+                          Width="24" Height="24" FontSize="11" VerticalAlignment="Center" Margin="8,0,0,0"
                           ToolTip="{{EditTip}}" Visibility="Collapsed"/>
                 </Grid>
                 <DataTemplate.Triggers>
