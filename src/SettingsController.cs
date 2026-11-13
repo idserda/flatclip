@@ -32,6 +32,7 @@ namespace FlatClip
             themeSystem = Find<RadioButton>("ThemeSystem");
             autoStart = Find<CheckBox>("AutoStart");
             errorText = Find<TextBlock>("ErrorText");
+            Find<TextBlock>("VersionText").Text = "FlatClip " + AppInfo.Version;
 
             var s = app.Settings;
             pendingHotkey = s.Hotkey;

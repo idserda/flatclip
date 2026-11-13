@@ -103,6 +103,9 @@ namespace FlatClip
             if (openSettingsAtStart) OpenSettings();
 
             SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
+
+            // Once startup is done, render the popup once invisibly so the first hotkey press is instant.
+            Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, new Action(popup.Prewarm));
         }
 
         void OnUserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e)
